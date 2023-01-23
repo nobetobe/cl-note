@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+#ifdef _WIN32
+    #define clear() system("cls")
+#else
+    #define clear() system("clear")
+#endif
 
 #include "utils.h"
 #include "command_parser.h"
@@ -57,15 +64,37 @@ int main(int argc, char **argv) {
     char *curr_sect = calloc(256, 1);
     strcpy_s(curr_sect, 256, argv[2]);
 
-    while (1) {
-        printf("CL-Note\t(%s) > ", curr_sect);
+    bool isRunning = true;
+    while (isRunning) {
+        printf("CL-Note (%s) > ", curr_sect);
         scanf("%[^\n]", input_buff);
 
-        fprintf(note_file, "%s\n", input_buff);
+        struct command *curr_command = parse(input_buff);
+        printf("Command type is %d and command contents is %s.\n", curr_command->type, curr_command->contents);
 
-        getc(stdin);
+        switch (curr_command->type)
+        {
+        case EXIT:
+            isRunning = false;
+            break;
+        
+        case CLEAR:
+            clear();
+            break;
+        
+        default:
+            printf("Unrecognized command.\n");
+        }
+
+        free(curr_command->contents);
+        free(curr_command);
         memset(input_buff, 0, BUFF_LEN);
+        getc(stdin);
     }
+
+
+    free(curr_sect);
+    free(input_buff);
 
     return 0;
 }
