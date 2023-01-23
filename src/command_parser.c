@@ -17,24 +17,16 @@ struct command *parse(char *str) {
         temp[i] = str[i];
         temp[i+1] = '\0';
     }
-    
-    switch (hash(temp))
-    {
-    case HASH_EXIT:
+
+    if (hash(temp) == hash("exit")) {
         res->type = EXIT;
-        break;
-    
-    case HASH_SECT:
+    }
+    else if (hash(temp) == hash("sect")) {
         res->type = CHANGE_SECT;
         strncpy(res->contents, &str[i+1], BUFF_LEN-1);
-        break;
-    
-    case HASH_CLEAR:
+    }
+    else if (hash(temp) == hash("clear")) {
         res->type = CLEAR;
-        break;
-    
-    default:
-        break;
     }
     
     return res;

@@ -25,9 +25,8 @@ int main(int argc, char **argv) {
     }
 
     FILE *note_file = NULL;
-    switch (hash(argv[1]))
-    {
-    case HASH_OPEN:
+
+    if (hash(argv[1]) == hash("open")) {
         if (argc < 3) {
             printf("No note_file specified.\n");
             printf("usage: %s open <note_filename>\n", argv[0]);
@@ -39,9 +38,8 @@ int main(int argc, char **argv) {
             printf("Error opening note_file.\n");
             exit(EXIT_FAILURE);
         }
-        break;
-    
-    case HASH_NEW:
+    }
+    else if (hash(argv[1]) == hash("new")) {
         if (argc < 3) {
             printf("No note_file specified.\n");
             printf("usage: %s new <note_filename>\n", argv[0]);
@@ -53,9 +51,8 @@ int main(int argc, char **argv) {
             printf("Error opening note_file.\n");
             exit(EXIT_FAILURE);
         }
-        break;
-    
-    default:
+    }
+    else {
         printf("Unrecognized command '%s'.\n", argv[1]);
         fail(argc, argv);
     }
