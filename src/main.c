@@ -11,6 +11,7 @@
 
 #include "utils.h"
 #include "command_parser.h"
+#include "sect.h"
 
 #define HASH_OPEN 2090588023UL
 #define HASH_NEW 193500239UL
@@ -61,12 +62,14 @@ int main(int argc, char **argv) {
 
 
     char *input_buff = calloc(BUFF_LEN, 1);
-    char *curr_sect = calloc(256, 1);
-    strcpy_s(curr_sect, 256, argv[2]);
+    struct sect *curr_sect = sect_new_sect(argv[2]);
+    char *display_sect = calloc(BUFF_LEN, 1);
+    strncpy(display_sect, curr_sect->name, BUFF_LEN-1);
 
     bool isRunning = true;
     while (isRunning) {
-        printf("CL-Note (%s) > ", curr_sect);
+
+        printf("CL-Note (%s) > ", display_sect);
         scanf("%[^\n]", input_buff);
 
         struct command *curr_command = parse(input_buff);
@@ -80,6 +83,58 @@ int main(int argc, char **argv) {
         
         case CLEAR:
             clear();
+            break;
+        
+        case CHANGE_SECT:
+            if (curr_command->contents[0] == '.') {
+                if (curr_sect->parent == NULL) {
+                    printf("Already at top section.\n");
+                    break;
+                }
+            
+                curr_sect = curr_sect->parent;
+                while (display_sect[strlen(display_sect)-1] != '/') {
+                    display_sect[strlen(display_sect)-1] = '\0';
+                }
+                display_sect[strlen(display_sect)-1] = '\0';
+                break;
+            }
+            else if (curr_command->contents[0] == '\0') {
+                while (curr_sect->parent != NULL)
+                    curr_sect = curr_sect->parent;
+                strncpy(display_sect, curr_sect->name, BUFF_LEN);
+                break;
+            }
+            else {
+                bool shouldBreak = false;
+                for (unsigned short i = 0; i < curr_sect->num_subsects; i++) {
+                    if (strcmp(curr_sect->subsects[i]->name, curr_command->contents) == 0) {
+                        curr_sect = curr_sect->subsects[i];
+                        strcat(display_sect, "/");
+                        strcat(display_sect, curr_sect->name);
+                        shouldBreak = true;
+                    }
+                }
+                if (shouldBreak) break;
+            }
+
+            char response[512] = { 0 };
+            printf("Create new section '%s'? [y/n] ", curr_command->contents);
+            scanf("%s", response);
+            printf("%s", response);
+
+            if (response[0] == 'y' || response[0] == 'Y') {
+                printf("aa");
+                sect_add_subsect(sect_new_sect(curr_command->contents), curr_sect);
+                curr_sect = curr_sect->subsects[curr_sect->num_subsects-1];
+                strcat(display_sect, "/");
+                strcat(display_sect, curr_sect->name);
+            }
+
+            break;
+        
+        case NOTE:
+            sect_add_note(curr_command->contents, curr_sect);
             break;
         
         default:
