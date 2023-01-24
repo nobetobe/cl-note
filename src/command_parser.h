@@ -18,6 +18,7 @@ enum COMMAND_TYPE {
     CHANGE_SECT,
     EXIT,
     CLEAR,
+    SAVE,
 };
 
 struct command {

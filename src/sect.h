@@ -13,7 +13,7 @@ struct sect {
     struct sect *parent;
 };
 
-void sect_add_note(char *note, struct sect *sect);
+void sect_add_note(char *note, struct sect *sect, unsigned buff_len);
 void sect_add_subsect(struct sect *subsect, struct sect *sect);
 struct sect *sect_new_sect(char *name);
 

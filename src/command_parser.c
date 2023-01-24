@@ -28,6 +28,9 @@ struct command *parse(char *str) {
     else if (hash(temp) == hash("clear")) {
         res->type = CLEAR;
     }
+    else if (hash(temp) == hash("save")) {
+        res->type = SAVE;
+    }
     
     return res;
 }

@@ -1,8 +1,9 @@
 #include "sect.h"
 
-void sect_add_note(char *note, struct sect *sect) {
+void sect_add_note(char *note, struct sect *sect, unsigned buff_len) {
     sect->notes = realloc(sect->notes, sizeof(char*) * (++sect->num_notes));
-    sect->notes[sect->num_notes-1] = note;
+    sect->notes[sect->num_notes-1] = calloc(buff_len, 1);
+    strcpy(sect->notes[sect->num_notes-1], note);
 }
 
 void sect_add_subsect(struct sect *subsect, struct sect *sect) {

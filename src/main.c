@@ -131,7 +131,15 @@ int main(int argc, char **argv) {
             break;
         
         case NOTE:
-            sect_add_note(curr_command->contents, curr_sect);
+            sect_add_note(curr_command->contents, curr_sect, BUFF_LEN);
+            break;
+        
+        case SAVE:
+            struct sect *temp = curr_sect;
+            while (temp->parent != NULL) {
+                temp = temp->parent;
+            }
+            save(temp, note_file, 0);
             break;
         
         default:
